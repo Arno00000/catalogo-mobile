@@ -28,6 +28,7 @@ Projeto desenvolvido como entrega final da disciplina de **Mobile Development**.
 - Tela de detalhes carregada por ID
 - Logout com limpeza completa do estado
 - Tratamento de carregamento, erro, retry e lista vazia
+- Interface, categorias, nomes e descrições em português, com preços em real
 
 ---
 
@@ -46,7 +47,7 @@ Validação escrita em JavaScript puro, sem bibliotecas externas de formulário 
 - A mensagem some assim que o usuário começa a corrigir o campo
 
 ### 🛍️ Catálogo
-Tela principal exibida após o login. Apresenta uma saudação personalizada com o nome derivado do e-mail informado, as abas de gênero e o seletor de categorias. A lista de produtos é renderizada com `FlatList`.
+Tela principal exibida após o login. Apresenta uma saudação personalizada com o nome derivado do e-mail informado, as abas de gênero e o seletor de categorias. Os produtos são renderizados em uma grade de duas colunas com `FlatList`.
 
 ### 👔 Categorias
 
@@ -70,6 +71,11 @@ Ao trocar de gênero, a categoria selecionada é automaticamente reiniciada para
 
 ### 🌐 API
 Todos os dados vêm da API pública **DummyJSON**. Nenhum dado é local, fictício ou embutido no código. Todas as requisições são feitas com **Axios**, a partir de uma instância única com `baseURL` e `timeout` configurados.
+
+### Idioma e moeda
+A API DummyJSON é pública e devolve os nomes e as descrições dos produtos em inglês. O projeto possui uma camada de localização em `src/utils/productTranslations.js` que traduz esses textos para português no momento da exibição, sem alterar o dado original recebido. Produtos sem tradução cadastrada continuam sendo exibidos com o texto da API, então a interface nunca quebra.
+
+Os preços são formatados no padrão brasileiro, com o símbolo `R$`, ponto no milhar e vírgula nos centavos (ex.: `R$ 1.299,90`). Toda a formatação está concentrada em `src/utils/price.js`.
 
 ### 🔎 Detalhes
 Ao tocar em um produto, o aplicativo navega para a tela de detalhes enviando **apenas o ID** como parâmetro de rota. A tela então faz uma nova requisição a `/products/{id}` e exibe:
@@ -134,13 +140,15 @@ Nenhuma outra biblioteca foi adicionada. Bibliotecas de UI, de formulário, de p
 catalogo-mobile/
 │
 ├── App.js                          # Ponto de entrada: Provider + navegação
+├── index.js                        # Registro do componente raiz (gerado pelo Expo)
 ├── app.json                        # Configuração do Expo
 ├── package.json
-├── babel.config.js
 ├── .gitignore
 ├── README.md
+├── extrair-textos.js               # Script auxiliar (não faz parte do app)
 │
 ├── assets/                         # Ícone e splash screen
+├── screenshots/                    # Prints usados neste README
 │
 └── src/
     │
@@ -150,6 +158,7 @@ catalogo-mobile/
     │   ├── GenderTabs.js
     │   ├── CategoryChips.js
     │   ├── ProductCard.js
+    │   ├── PromoBanner.js
     │   ├── Loading.js
     │   ├── ErrorMessage.js
     │   └── EmptyState.js
@@ -181,6 +190,7 @@ catalogo-mobile/
     │
     └── utils/                      # Funções auxiliares puras
         ├── price.js
+        ├── productTranslations.js
         └── validation.js
 ```
 
@@ -205,7 +215,7 @@ O estado global com Redux Toolkit. Contém a configuração da store e os *slice
 Dados estáticos que não mudam em tempo de execução — no caso, as categorias e seus slugs da API. Centralizá-los evita que a mesma lista seja duplicada em arquivos diferentes.
 
 #### `utils/`
-Funções auxiliares puras: cálculo e formatação de preço, e validação de formulário. Não conhecem React nem a API, e por isso podem ser usadas em qualquer parte do projeto.
+Funções auxiliares puras: cálculo e formatação de preço, validação de formulário e a camada de localização que traduz os textos dos produtos. Não conhecem React nem componentes, e por isso podem ser usadas em qualquer parte do projeto.
 
 #### `styles/`
 Tokens visuais (cores, espaçamentos, tipografia, raios e sombras). Nenhum arquivo escreve um código hexadecimal solto: todos importam daqui. Trocar a identidade visual do aplicativo é editar **um único arquivo**.
@@ -257,7 +267,7 @@ Não é necessário instalar Android Studio nem Xcode para rodar o projeto desta
 
 ```bash
 # 1. Clone o repositório
-git clone URL_DO_REPOSITORIO
+git clone https://github.com/Arno00000/catalogo-mobile.git
 
 # 2. Entre na pasta do projeto
 cd catalogo-mobile
@@ -268,8 +278,6 @@ npm install
 # 4. Inicie o projeto
 npx expo start
 ```
-
-> Substitua `URL_DO_REPOSITORIO` pelo endereço real do repositório no GitHub.
 
 Após o último comando, um **QR Code** aparecerá no terminal.
 
@@ -677,39 +685,25 @@ npx expo install expo-image
 
 E substituir o `Image` do React Native pelo `Image` do `expo-image` em `ProductCard.js` e `ProductDetailsScreen.js`.
 
-### Aviso sobre `headerBackTitleVisible`
-
-Essa propriedade foi renomeada em versões recentes do React Navigation. O aviso é inofensivo; se preferir removê-lo, apague a linha correspondente em `src/navigation/MainNavigator.js`. Ela afeta apenas um detalhe visual do botão voltar no iOS.
-
 ### A tela fica em branco após o login
 
 Verifique se o `Provider` do Redux envolve o `AppNavigator` em `App.js`. Se o `Provider` estiver por dentro, o `useSelector` do `AppNavigator` não encontra a store.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
-### Tela de Login
-<!-- Adicione aqui o print da tela de login, incluindo o estado com as mensagens de validação -->
-
+### Login — validação dos campos
 ![Login](./screenshots/login.png)
 
 ### Catálogo — Masculino
-<!-- Adicione aqui o print do catálogo com a aba Masculino selecionada -->
-
 ![Catálogo Masculino](./screenshots/catalogo-masculino.png)
 
 ### Catálogo — Feminino
-<!-- Adicione aqui o print do catálogo com a aba Feminino selecionada -->
-
 ![Catálogo Feminino](./screenshots/catalogo-feminino.png)
 
-### Detalhes do Produto
-<!-- Adicione aqui o print da tela de detalhes -->
-
+### Detalhes do produto
 ![Detalhes](./screenshots/detalhes.png)
-
-> Crie uma pasta `screenshots/` na raiz do projeto e salve as imagens com os nomes acima.
 
 ---
 
@@ -722,7 +716,7 @@ git init
 git add .
 git commit -m "feat: projeto inicial do catálogo mobile"
 git branch -M main
-git remote add origin URL_DO_REPOSITORIO
+git remote add origin https://github.com/Arno00000/catalogo-mobile.git
 git push -u origin main
 ```
 
@@ -746,15 +740,14 @@ git push
 
 ---
 
-## 👤 Autor
+## Autor
 
 | | |
 |---|---|
-| **Nome** | _preencher_ |
-| **Universidade** | _preencher_ |
+| **Nome** | André Vitor de Oliveira Cirino |
+| **Universidade** | UniFECAF |
 | **Disciplina** | Mobile Development |
-| **Professor(a)** | _preencher_ |
-| **Semestre** | _preencher_ |
+| **Professora** | Patrícia Ampese |
 
 ---
 
