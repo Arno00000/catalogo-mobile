@@ -1,0 +1,31 @@
+# Dependências
+node_modules/
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# Builds nativos (gerados por prebuild — não versionar em projeto Expo gerenciado)
+android/
+ios/
+
+# Logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editores
+.idea/
+*.swp
+
+# Variáveis de ambiente
+.env
+.env.local
