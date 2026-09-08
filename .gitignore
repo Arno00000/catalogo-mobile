@@ -29,3 +29,6 @@ Thumbs.db
 # Variáveis de ambiente
 .env
 .env.local
+.claude/ 
+AGENTS.md 
+CLAUDE.md 
